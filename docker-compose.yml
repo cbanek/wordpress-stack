@@ -1,0 +1,32 @@
+web:
+    image: wordpress
+    volumes:
+     - ./wp-content:/var/www/html/wp-content
+    links:
+     - mysql
+    environment:
+     - WORDPRESS_DB_PASSWORD=password
+    ports:
+     - "80:80"
+mysql:
+    image: mysql:5.7
+    command: --sql-mode=""
+    environment:
+     - MYSQL_ROOT_PASSWORD=password
+     - MYSQL_DATABASE=wordpress
+backup:
+    image: confirm/mysql-backup
+    volumes:
+        - ./db-backup:/backup
+    links:
+        - mysql
+    restart: never
+restore:
+    environment:
+        - MODE=RESTORE
+    image: confirm/mysql-backup
+    volumes:
+        - ./db-backup:/backup
+    links:
+        - mysql
+    restart: never
